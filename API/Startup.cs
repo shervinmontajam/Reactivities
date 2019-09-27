@@ -1,4 +1,7 @@
-﻿using API.Extensions;
+﻿using System.ComponentModel;
+using API.Extensions;
+using Application.Activities;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -26,8 +29,9 @@ namespace API
                     option.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
                 });
             services.AddCors(options => {
-                options.AddPolicy("CorsPolicy", policy => policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000","http://localhost:3001n"));
+                options.AddPolicy("CorsPolicy", policy => policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000","http://localhost:3001"));
             });
+            services.AddMediatR(typeof(List.Handler).Assembly);
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 

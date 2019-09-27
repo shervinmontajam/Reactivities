@@ -13,6 +13,7 @@ namespace API.Extensions
             {
                 var context = scope.ServiceProvider.GetService<DataContext>();
                 context.Database.Migrate();
+                Seed.SeedDate(context);
             }
         }
     }
