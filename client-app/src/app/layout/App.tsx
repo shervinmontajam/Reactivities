@@ -19,11 +19,35 @@ const App = () => {
 
   const handleSelectActivity = (id: string) => {
     setSelectedActivity(activities.filter(a => a.id === id)[0]);
+    setEditMode(false);
+  }
+
+  const handleCreateActivity = (activity : IActivity) => {
+    setActivity([...activities, activity]);
+    setSelectedActivity(activity);
+    setEditMode(false);
+  }
+
+  const handleEditActivity = (activity : IActivity) =>{
+    setActivity([...activities.filter(a=>a.id !== activity.id), activity]);
+    setSelectedActivity(activity);
+    setEditMode(false);
+  }
+
+  const handleDeleteActivity = (id : string) =>{
+    setActivity([...activities.filter(a=>a.id !== id)]);
   }
 
   useEffect(() => {
     axios.get<IActivity[]>("http://localhost:5000/api/activities")
-      .then((response) => { setActivity(response.data) })
+      .then((response) => { 
+        let activities : IActivity[] = [];
+        response.data.forEach(activity => {
+          activity.date = activity.date.split(".")[0];
+          activities.push(activity);
+        });
+        setActivity(activities) 
+      })
   }, [])
 
   return (
@@ -35,7 +59,11 @@ const App = () => {
           selectActivity={handleSelectActivity}
           selectedActivity={selectedActivity}
           editMode={editMode}
-          setEditMode={setEditMode} />
+          setEditMode={setEditMode}
+          setSelectedActivity={setSelectedActivity}
+          createActivity={handleCreateActivity}
+          editActivity={handleEditActivity}
+          deleteActivity={handleDeleteActivity} />
       </Container>
     </Fragment>
   );

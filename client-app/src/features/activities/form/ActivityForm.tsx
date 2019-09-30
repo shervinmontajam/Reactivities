@@ -1,17 +1,65 @@
-import React from 'react'
-import { Segment , Form } from 'semantic-ui-react'
+import React, {useState, FormEvent} from 'react'
+import { Segment, Form, Button } from 'semantic-ui-react'
+import { IActivity } from '../../../app/models/activity'
+import {v4 as uuid} from 'uuid';
 
-const ActivityForm = () => {
+interface IProps {
+    setEditMode: (editMode: boolean) => void;
+    selectedActivity: IActivity | null;
+    createActivity : (activity : IActivity) => void;
+    editActivity : (activity : IActivity) => void;
+}
+
+const ActivityForm: React.FC<IProps> = ({ setEditMode, selectedActivity,createActivity,editActivity }) => {
+
+    const initialForm = () => {
+        if (selectedActivity) {
+            return selectedActivity;
+        }
+        else {
+            return {
+                id: '',
+                title: '',
+                description: '',
+                category: '',
+                date: '',
+                city: '',
+                venue: ''
+            }
+        }
+    }
+
+    const [activity,setActivity] = useState<IActivity>(initialForm);
+
+    const handleInputChange = (event : FormEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const {name, value} = event.currentTarget;
+        setActivity({...activity, [name]:value});
+    }
+
+    const handleSubmit = () => {
+        if(activity.id.length === 0){
+            let newActivity = {
+                ...activity,
+                id: uuid()
+            }
+            createActivity(newActivity);
+        } else{
+            editActivity(activity);
+        }
+    }
+
     return (
         <div>
-            <Segment>
-                <Form>
-                    <Form.Input placeholder="Title" />
-                    <Form.TextArea rows={2} placeholder="Description" />
-                    <Form.Input placeholder="Category" />
-                    <Form.Input placeholder="Date" type="date" />
-                    <Form.Input placeholder="City" />
-                    <Form.Input placeholder="Venue" />
+            <Segment clearing>
+                <Form onSubmit={()=> handleSubmit()}>
+                    <Form.Input name="title" placeholder="Title" value={activity.title} onChange={(event)=> handleInputChange(event)} />
+                    <Form.TextArea name="description" rows={2} placeholder="Description" value={activity.description} onChange={(event)=> handleInputChange(event)} />
+                    <Form.Input name="category" placeholder="Category" value={activity.category} onChange={(event)=> handleInputChange(event)} />
+                    <Form.Input name="date" placeholder="Date" type="datetime-local" value={activity.date} onChange={(event)=> handleInputChange(event)} />
+                    <Form.Input name="city" placeholder="City" value={activity.city} onChange={(event)=> handleInputChange(event)} />
+                    <Form.Input name="venue" placeholder="Venue" value={activity.venue} onChange={(event)=> handleInputChange(event)} />
+                    <Button floated="right" positive type="submit" content="Submit" />
+                    <Button floated="right" type="button" content="Cancel" onClick={() => setEditMode(false)} />
                 </Form>
             </Segment>
         </div>
