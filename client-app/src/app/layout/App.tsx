@@ -1,18 +1,20 @@
-import React, { useState, useEffect, Fragment, SyntheticEvent } from 'react';
+import React, { useState, useEffect, Fragment, SyntheticEvent, useContext } from 'react';
 import { Container } from 'semantic-ui-react';
 import { IActivity } from '../models/activity';
 import NavBar from '../../features/nav/NavBar';
 import ActivityDashboard from '../../features/activities/dashboard/ActivityDashboard';
 import agent from '../api/agent';
 import LoadingComponent from './LoadingComponent';
-
+import ActivityStore from '../stores/activityStore';
+import { observer } from 'mobx-react-lite';
 
 const App = () => {
 
+  const activityStore = useContext(ActivityStore)
   const [activities, setActivity] = useState<IActivity[]>([]);
   const [selectedActivity, setSelectedActivity] = useState<IActivity | null>(null);
   const [editMode, setEditMode] = useState(false);
-  const [loading, setLoading] = useState(true);
+  //const [loading, setLoading] = useState(true);
   const [submitting, setSubmiting] = useState(false);
   const [target, setTarget] = useState("");
 
@@ -32,7 +34,7 @@ const App = () => {
       setActivity([...activities, activity]);
       setSelectedActivity(activity);
       setEditMode(false);
-    }).then(()=> setSubmiting(false));
+    }).then(() => setSubmiting(false));
   }
 
   const handleEditActivity = (activity: IActivity) => {
@@ -41,7 +43,7 @@ const App = () => {
       setActivity([...activities.filter(a => a.id !== activity.id), activity]);
       setSelectedActivity(activity);
       setEditMode(false);
-    }).then(()=> setSubmiting(false));
+    }).then(() => setSubmiting(false));
 
   }
 
@@ -50,29 +52,21 @@ const App = () => {
     setTarget(event.currentTarget.name);
     agent.Activities.delete(id).then(() => {
       setActivity([...activities.filter(a => a.id !== id)]);
-    }).then(()=> setSubmiting(false));
+    }).then(() => setSubmiting(false));
   }
 
   useEffect(() => {
-    agent.Activities.list()
-      .then((response) => {
-        let activities: IActivity[] = [];
-        response.forEach(activity => {
-          activity.date = activity.date.split(".")[0];
-          activities.push(activity);
-        });
-        setActivity(activities)
-      }).then(() => setLoading(false))
-  }, [])
+    activityStore.loadActivities();
+  }, [activityStore]);
 
-  if (loading) return <LoadingComponent content="Loading activities ..." />
+  if (activityStore.loadingInitial) return <LoadingComponent content="Loading activities ..." />
 
   return (
     <Fragment>
       <NavBar openCreateForm={handleOpenCreateForm} />
       <Container style={{ marginTop: "7em" }}>
         <ActivityDashboard
-          activities={activities}
+          activities={activityStore.activities}
           selectActivity={handleSelectActivity}
           selectedActivity={selectedActivity}
           editMode={editMode}
@@ -88,4 +82,4 @@ const App = () => {
   );
 }
 
-export default App;
+export default observer(App);
