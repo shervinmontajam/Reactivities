@@ -3,6 +3,7 @@ import { Segment, Form, Button } from 'semantic-ui-react'
 import { IActivity } from '../../../app/models/activity'
 import { v4 as uuid } from 'uuid';
 import ActivityStore from '../../../app/stores/activityStore';
+import { observer } from 'mobx-react-lite';
 
 interface IProps {
     selectedActivity: IActivity | null;
@@ -67,4 +68,4 @@ const ActivityForm: React.FC<IProps> = ({ selectedActivity }) => {
     )
 }
 
-export default ActivityForm;
+export default observer(ActivityForm);
