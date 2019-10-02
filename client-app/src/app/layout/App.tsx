@@ -14,38 +14,9 @@ const App = () => {
   const [activities, setActivity] = useState<IActivity[]>([]);
   const [selectedActivity, setSelectedActivity] = useState<IActivity | null>(null);
   const [editMode, setEditMode] = useState(false);
-  //const [loading, setLoading] = useState(true);
   const [submitting, setSubmiting] = useState(false);
   const [target, setTarget] = useState("");
 
-  const handleOpenCreateForm = () => {
-    setEditMode(true);
-    setSelectedActivity(null);
-  }
-
-  const handleSelectActivity = (id: string) => {
-    setSelectedActivity(activities.filter(a => a.id === id)[0]);
-    setEditMode(false);
-  }
-
-  const handleCreateActivity = (activity: IActivity) => {
-    setSubmiting(true);
-    agent.Activities.create(activity).then(() => {
-      setActivity([...activities, activity]);
-      setSelectedActivity(activity);
-      setEditMode(false);
-    }).then(() => setSubmiting(false));
-  }
-
-  const handleEditActivity = (activity: IActivity) => {
-    setSubmiting(true);
-    agent.Activities.update(activity).then(() => {
-      setActivity([...activities.filter(a => a.id !== activity.id), activity]);
-      setSelectedActivity(activity);
-      setEditMode(false);
-    }).then(() => setSubmiting(false));
-
-  }
 
   const handleDeleteActivity = (event: SyntheticEvent<HTMLButtonElement>, id: string) => {
     setSubmiting(true);
@@ -63,17 +34,9 @@ const App = () => {
 
   return (
     <Fragment>
-      <NavBar openCreateForm={handleOpenCreateForm} />
+      <NavBar />
       <Container style={{ marginTop: "7em" }}>
         <ActivityDashboard
-          activities={activityStore.activities}
-          selectActivity={handleSelectActivity}
-          selectedActivity={selectedActivity}
-          editMode={editMode}
-          setEditMode={setEditMode}
-          setSelectedActivity={setSelectedActivity}
-          createActivity={handleCreateActivity}
-          editActivity={handleEditActivity}
           deleteActivity={handleDeleteActivity}
           submitting={submitting}
           target={target} />
