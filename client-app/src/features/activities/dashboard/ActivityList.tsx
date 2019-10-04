@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 const ActivityList: React.FC = () => {
 
     const activityStore = useContext(ActivityStore);
-    const { activityByDate, selectActivity, deleteActivity, target, submitting } = activityStore;
+    const { activityByDate, deleteActivity, target, submitting } = activityStore;
 
     return (
         <Segment clearing>
