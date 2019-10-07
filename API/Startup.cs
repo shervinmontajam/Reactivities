@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using API.Extensions;
+using API.Middleware;
 using Application.Activities;
 using FluentValidation.AspNetCore;
 using MediatR;
@@ -43,9 +44,11 @@ namespace API
         {
             app.UseDatabaseMigrations();
 
+            app.UseMiddleware<ErrorHandlingMiddleware>();
+
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                //app.UseDeveloperExceptionPage();
             }
             else
             {

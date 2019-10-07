@@ -1,8 +1,10 @@
 ﻿using MediatR;
 using Persistence;
 using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Errors;
 using FluentValidation;
 
 namespace Application.Activities
@@ -46,7 +48,7 @@ namespace Application.Activities
             {
                 var activity = await _dataContext.Activities.FindAsync(request.Id);
 
-                if (activity == null) throw new Exception("Not found");
+                if (activity == null) throw new RestException(HttpStatusCode.NotFound, new { activity = "Not Found" });
 
                 activity.Title = request.Title ?? activity.Title;
                 activity.Description = request.Description ?? activity.Description;

@@ -1,8 +1,10 @@
 ﻿using MediatR;
 using Persistence;
 using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Errors;
 
 namespace Application.Activities
 {
@@ -25,7 +27,7 @@ namespace Application.Activities
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
                 var activity = await _dataContext.Activities.FindAsync(request.Id);
-                if(activity == null) throw new Exception("Not Found");
+                if(activity == null) throw new RestException( HttpStatusCode.NotFound,new {activity = "Not Found"});
 
                 _dataContext.Activities.Remove(activity);
 
