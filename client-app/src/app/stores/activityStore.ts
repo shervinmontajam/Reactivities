@@ -39,11 +39,10 @@ class ActivityStore {
 
     }
     catch (error) {
-      console.log(error);
       runInAction(() => {
         this.loadingInitial = false;
       });
-
+      console.log(error);
     }
   }
 
@@ -60,10 +59,10 @@ class ActivityStore {
           this.loadingInitial = false;
         });
       } catch (error) {
-        console.log(error);
         runInAction("Loading activity error", () => {
           this.loadingInitial = false;
         });
+        console.log(error);
       }
     }
   }
@@ -84,11 +83,10 @@ class ActivityStore {
 
     }
     catch (error) {
-      console.log(error);
       runInAction(() => {
         this.submitting = false;
       });
-
+      console.log(error);
     }
   }
 
@@ -103,11 +101,10 @@ class ActivityStore {
       });
 
     } catch (error) {
-      console.log(error);
       runInAction(() => {
         this.submitting = false;
       });
-
+      console.log(error);
     }
   }
 
@@ -122,12 +119,11 @@ class ActivityStore {
         this.submitting = false;
       });
     } catch (error) {
-      console.log(error);
       runInAction(() => {
         this.target = "";
         this.submitting = false;
       });
-
+      console.log(error);
     }
   }
 
