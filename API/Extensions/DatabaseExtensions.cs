@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Domain;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Persistence;
@@ -12,8 +14,9 @@ namespace API.Extensions
             using (var scope = applicationBuilder.ApplicationServices.CreateScope())
             {
                 var context = scope.ServiceProvider.GetService<DataContext>();
+                var userManager = scope.ServiceProvider.GetService<UserManager<AppUser>>();
                 context.Database.Migrate();
-                Seed.SeedDate(context);
+                Seed.SeedDate(context, userManager).Wait();
             }
         }
     }
