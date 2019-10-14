@@ -5,6 +5,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers
 {
@@ -19,6 +20,7 @@ namespace API.Controllers
         }
 
 
+        [Authorize]
         [HttpGet("{Id}")]
         public async Task<ActionResult<Activity>> Details(Guid id)
         {
