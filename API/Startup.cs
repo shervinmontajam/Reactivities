@@ -8,10 +8,12 @@ using FluentValidation.AspNetCore;
 using Infrastructure.Security;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,11 +38,18 @@ namespace API
                 {
                     option.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
                 });
+
             services.AddCors(options => {
                 options.AddPolicy("CorsPolicy", policy => policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000","http://localhost:3001"));
             });
+
             services.AddMediatR(typeof(List.Handler).Assembly);
-            services.AddMvc()
+
+            services.AddMvc(opt=>
+                {
+                    var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+                    opt.Filters.Add(new AuthorizeFilter(policy));
+                })
                 .AddFluentValidation(config=>config.RegisterValidatorsFromAssemblyContaining<Create.Command>())
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
@@ -49,7 +58,8 @@ namespace API
             identityBuilder.AddEntityFrameworkStores<DataContext>();
             identityBuilder.AddSignInManager<SignInManager<AppUser>>();
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("super secret key"));
+            System.Diagnostics.Debug.WriteLine(Configuration["TokenKey"]);
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["TokenKey"]));
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(opt =>
                 {
@@ -63,6 +73,7 @@ namespace API
                 });
 
             services.AddScoped<IJwtGenerator, JwtGenerator>();
+            services.AddScoped<IUserAccessor, UserAccessor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
