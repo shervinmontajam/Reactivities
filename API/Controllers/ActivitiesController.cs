@@ -1,11 +1,11 @@
-﻿using System;
-using Application.Activities;
-using Domain;
+﻿using Application.Activities;
+using Application.Activities.DataTransferObjects;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers
 {
@@ -14,7 +14,7 @@ namespace API.Controllers
     {
 
         [HttpGet]
-        public async Task<ActionResult<List<Activity>>> List()
+        public async Task<ActionResult<List<ActivityDto>>> List()
         {
             return await Mediator.Send(new List.Query());
         }
@@ -22,7 +22,7 @@ namespace API.Controllers
 
         [Authorize]
         [HttpGet("{Id}")]
-        public async Task<ActionResult<Activity>> Details(Guid id)
+        public async Task<ActionResult<ActivityDto>> Details(Guid id)
         {
             return await Mediator.Send(new Details.Query { Id = id });
         }
@@ -48,5 +48,16 @@ namespace API.Controllers
             return await Mediator.Send(new Delete.Command{Id = id});
         }
 
+        [HttpPost("{id}/attend")]
+        public async Task<ActionResult<Unit>> Attend(Guid id)
+        {
+            return await Mediator.Send(new Attend.Command {Id = id});
+        }
+
+        [HttpDelete("{id}/attend")]
+        public async Task<ActionResult<Unit>> UnAttend(Guid id)
+        {
+            return await Mediator.Send(new UnAttend.Command {Id = id});
+        }
     }
 }

@@ -3,6 +3,7 @@ using API.Extensions;
 using API.Middleware;
 using Application.Activities;
 using Application.Interfaces;
+using AutoMapper;
 using Domain;
 using FluentValidation.AspNetCore;
 using Infrastructure.Security;
@@ -35,22 +36,26 @@ namespace API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<DataContext>(option =>
-                {
-                    option.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
-                });
+            {
+                option.UseLazyLoadingProxies();
+                option.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
+            });
 
-            services.AddCors(options => {
-                options.AddPolicy("CorsPolicy", policy => policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000","http://localhost:3001"));
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", policy => policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000", "http://localhost:3001"));
             });
 
             services.AddMediatR(typeof(List.Handler).Assembly);
 
-            services.AddMvc(opt=>
+            services.AddAutoMapper(typeof(List.Handler));
+
+            services.AddMvc(opt =>
                 {
                     var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
                     opt.Filters.Add(new AuthorizeFilter(policy));
                 })
-                .AddFluentValidation(config=>config.RegisterValidatorsFromAssemblyContaining<Create.Command>())
+                .AddFluentValidation(config => config.RegisterValidatorsFromAssemblyContaining<Create.Command>())
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             var builder = services.AddIdentityCore<AppUser>();
