@@ -16,7 +16,7 @@ namespace API.Extensions
                 var context = scope.ServiceProvider.GetService<DataContext>();
                 var userManager = scope.ServiceProvider.GetService<UserManager<AppUser>>();
                 context.Database.Migrate();
-                Seed.SeedDate(context, userManager).Wait();
+                Seed.SeedData(context, userManager).Wait();
             }
         }
     }
