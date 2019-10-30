@@ -1,16 +1,13 @@
-﻿using System.Data;
-using System.Net;
-using Application.Activities;
+﻿using Application.Errors;
+using Application.Interfaces;
 using Domain;
 using FluentValidation;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Persistence;
+using Microsoft.AspNetCore.Identity;
+using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Application.Errors;
-using Application.Interfaces;
-using Microsoft.AspNetCore.Identity;
 
 namespace Application.User
 {
@@ -61,7 +58,7 @@ namespace Application.User
                         DisplayName = user.DisplayName,
                         Token = _jwtGenerator.CreateToken(user),
                         Username = user.UserName,
-                        Image = string.Empty
+                        Image = user.Photos.FirstOrDefault(a=>a.IsMain)?.Url
                     };
 
                 throw  new RestException(HttpStatusCode.Unauthorized);
