@@ -20,7 +20,7 @@ namespace API.Controllers
             return await Mediator.Send(new Delete.Command{Id = id});
         }
 
-        [HttpPost("{is}/setMain")]
+        [HttpPost("{id}/setMain")]
         public async Task<ActionResult<Unit>> SetMain(string id)
         {
             return await Mediator.Send(new SetMain.Command {Id = id});
